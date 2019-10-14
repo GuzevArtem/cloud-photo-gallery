@@ -6,7 +6,7 @@ from flask import Flask, url_for
 from os import listdir, getcwd
 from os.path import isfile, join, exists
 from urllib import parse
-from PIL import Image
+from mimetypes import guess_extension
 
 app = Flask(__name__)
 app.config['img_folder'] = 'user_images'
@@ -31,7 +31,7 @@ try:
                 with Image.open(join(path,filename)) as file:
                     with app.app_context(), app.test_request_context():
                         url = url_for('photoShow', username = username, photoname = filename)
-                        photos.append(ph.Photo(filename , url, path, Image.MIME[file.format]))
+                        photos.append(ph.Photo(filename , url, path, guess_extension(file.format)))
             print('Saving photos for', username, ':', photos) #debug print
             ph.photo_holder.add_photos_for(username, photos)
 except FileNotFoundError:
