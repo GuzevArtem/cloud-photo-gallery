@@ -103,3 +103,9 @@ venv.bak/
 # mypy
 .mypy_cache/
 /.vs
+
+
+
+#custom folders
+users/
+user_images/
