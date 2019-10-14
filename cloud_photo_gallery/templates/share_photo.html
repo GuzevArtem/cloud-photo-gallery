@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block styles %}
+    <link rel="stylesheet" type="text/css" href="/static/styles/photo_preview.css" />
+{% endblock %}
+
+
+{% block content %}
+
+<div class="jumbotron">
+    <div class="row">
+        <div class="col-md-4">
+            <h2>See</h2>
+            <p><a class="btn btn-default" href="{{ url_for('photos') }}">See your photos in cloud &raquo;</a></p>
+        </div>
+    </div>
+</div>
+<div>
+    <h1>Upload your photos</h1>
+    <form method="post" class="photo_selector" enctype="multipart/form-data" action="{{ url_for('share_upload') }}">
+        <div>
+            <label for="file">Choose file(s) to upload</label>
+            <input class="photo_select" type="file" id="file" name="file[]" multiple accept=".png, .jpg, .jpeg">
+        </div>
+        <div class="row photo_preview">
+        </div>
+        <div>
+            <button class="submit" type="submit">Submit</button>
+            <button type="reset">Cancel</button>
+        </div>
+    </form>
+
+</div>
+
+
+
+{% endblock %}
+
+
+{% block scripts %}
+    <script src="/static/scripts/photo/photo_preview.js"></script>
+{% endblock %}

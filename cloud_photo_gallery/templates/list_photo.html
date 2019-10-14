@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% block styles %}
+    <link rel="stylesheet" type="text/css" href="/static/styles/photo_preview.css" />
+{% endblock %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <div class="row">
+        <div class="col-md-4">
+            <h2>Share</h2>
+            <p><a class="btn btn-default" href="{{ url_for('share') }}">Share your photos to cloud &raquo;</a></p>
+        </div>
+    </div>
+</div>
+
+<div class="photo_preview row">
+    {% if images is not defined %}
+    <h2>You haven't any photo yet :(</h2>
+    {% endif %}
+    <ol>
+    {% for image in images %}
+        <li class="preview_image">
+            <a class="remove_button" href="{{ url_for('photoRemove', photoname = image.filename) }}"><button name="">X</button></a>
+            <a class="image" href="{{ url_for('photoDownload',username = current_user.name, photoname = image.filename) }}">
+                <img src="{{ url_for('photoShow', username = current_user.name, photoname = image.filename) }}" height="{{ image.height }}" alt="{{ image.filename }}" />
+            </a>
+            <div>
+                <p class="file_number">{{loop.index + 1}}.</p><p class="file_desc"> {{ image.filename }}</p>
+            </div>
+        </li>
+    {% endfor %}
+    </ol>
+      
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}
+    <!--<script src="/static/scripts/photo/photo_preview.js"></script>-->
+{% endblock %}

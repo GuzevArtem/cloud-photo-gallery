@@ -50,10 +50,7 @@
     <Folder Include="cloud_photo_gallery\templates\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="cloud_photo_gallery\.dockerignore" />
-    <Content Include="cloud_photo_gallery\docker-compose.debug.yml" />
-    <Content Include="cloud_photo_gallery\docker-compose.yml" />
-    <Content Include="cloud_photo_gallery\Dockerfile" />
+    <Content Include=".dockerignore" />
     <Content Include="cloud_photo_gallery\static\scripts\auth\auth.js" />
     <Content Include="cloud_photo_gallery\static\scripts\photo\photo_preview.js" />
     <Content Include="cloud_photo_gallery\static\styles\login.css" />
@@ -61,6 +58,9 @@
     <Content Include="cloud_photo_gallery\templates\list_photo.html" />
     <Content Include="cloud_photo_gallery\templates\login.html" />
     <Content Include="cloud_photo_gallery\templates\share_photo.html" />
+    <Content Include="docker-compose.debug.yml" />
+    <Content Include="docker-compose.yml" />
+    <Content Include="Dockerfile" />
     <Content Include="requirements.txt" />
     <Content Include="cloud_photo_gallery\static\content\bootstrap.css" />
     <Content Include="cloud_photo_gallery\static\content\bootstrap.min.css" />
@@ -94,15 +94,6 @@
       <Id>enviroment</Id>
       <Version>3.7</Version>
       <Description>enviroment (Python 3.7 (64-bit))</Description>
-      <InterpreterPath>Scripts\python.exe</InterpreterPath>
-      <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
-      <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
-      <Architecture>X64</Architecture>
-    </Interpreter>
-    <Interpreter Include="env\">
-      <Id>env</Id>
-      <Version>3.7</Version>
-      <Description>env (Python 3.7 (64-bit))</Description>
       <InterpreterPath>Scripts\python.exe</InterpreterPath>
       <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
       <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>

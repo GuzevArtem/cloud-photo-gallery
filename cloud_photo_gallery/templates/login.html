@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+
+{% block styles %}
+    <link rel="stylesheet" type="text/css" href="/static/styles/login.css" />
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="jumbotron">
+        <div class="row justified">
+            <div class="login-box">
+                <h2 class="centered_text">Sign in</h2>
+                <form method="post" class="login">
+                    <div class="error">
+                        {{ login_error }}
+                    </div>
+                    <div class="row">
+                        <label for="username">Username</label>
+                        <input class="username right" type="text" name="username" required>
+                    </div>
+                    <div class="row">
+                        <label for="password">Password</label>
+                        <input class="password right" type="password" name="password" required>
+                    </div>
+                    <button type="submit" class="center">Sign in</button>
+                    <input type="checkbox" name="rember">Remember me
+                </form>
+            </div>
+
+            <div class="login-box">
+                <h2 class="centered_text">Or sign up</h2>
+                <form method="post" class="signup" action="{{ url_for('signup') }}{{ next_redirect }}">
+                    <div class="error">
+                        {{ signup_error }}
+                    </div>
+                    <div class="row">
+                        <label for="username">Username</label>
+                        <input class="username right" type="text" name="username" required>
+                    </div>
+                    <div class="row">
+                        <label for="password">Password</label>
+                        <input class="password right" type="password" name="password" required>
+                    </div>
+                    <button type="submit" class="center">Sign up</button>
+                    <input type="checkbox" name="rember">Remember me
+                </form>
+            </div>
+        </div>
+
+
+        {% endblock %}
+
+
+        {% block scripts %}
+        <!--<script src="/static/scripts/auth/login.js"></script>-->
+        {% endblock %}

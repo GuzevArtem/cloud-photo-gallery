@@ -1,0 +1,32 @@
+
+.photo_select {
+    max-width: none;
+}
+
+.photo_preview img {
+    height: 250px;
+}
+
+.photo_preview .preview_image {
+    position: relative;
+    float: left;
+    text-align: center;
+    margin: 5px;
+}
+
+.photo_preview ol {
+    list-style-type: none;
+}
+
+.file_number {
+    float: left;
+}
+
+.file_desc {
+}
+
+.remove_button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
