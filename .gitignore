@@ -109,3 +109,4 @@ venv.bak/
 #custom folders
 users/
 user_images/
+obj/

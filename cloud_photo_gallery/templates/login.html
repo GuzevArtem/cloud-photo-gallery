@@ -11,7 +11,7 @@
         <div class="row justified">
             <div class="login-box">
                 <h2 class="centered_text">Sign in</h2>
-                <form method="post" class="login">
+                <form method="post" class="login" action="{{ url_for('login') }}{{ next_redirect }}">
                     <div class="error">
                         {{ login_error }}
                     </div>

@@ -3,27 +3,28 @@
 # OS Support also exists for jessie & stretch (slim and full).
 # See https://hub.docker.com/r/library/python/ for all supported Python
 # tags from Docker Hub.
-FROM python:alpine
-
-# If you prefer miniconda:
-#FROM continuumio/miniconda3
+FROM python:3
 
 LABEL Name=cloud-photo-gallery Version=0.0.1
-EXPOSE 5000
 
 WORKDIR /app
 ADD . /app
+#COPY . /app
 
 # Using pip:
+
 RUN pip install --upgrade pip
-RUN python3 -m pip install -r requirements.txt
-CMD ["python3", "-m", "cloud-photo-gallery"]
+
+#for windows containers
+RUN py -3 -m pip install -r requirements.txt
+CMD ["py", "-3", "runserver.py"]
+
+#for linux containers
+#RUN python3 -m pip install -r requirements.txt
+#CMD ["python3", "runserver.py"]
 
 # Using pipenv:
 #RUN python3 -m pip install pipenv
 #RUN pipenv install --ignore-pipfile
 #CMD ["pipenv", "run", "python3", "-m", "cloud-photo-gallery"]
 
-# Using miniconda (make sure to replace 'myenv' w/ your environment name):
-#RUN conda env create -f environment.yml
-#CMD /bin/bash -c "source activate myenv && python3 -m cloud-photo-gallery"
