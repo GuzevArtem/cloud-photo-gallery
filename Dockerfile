@@ -11,13 +11,13 @@ WORKDIR /app
 ADD . /app
 #COPY . /app
 
-#for windows containers & heroku(?)
+#for windows containers
 # Using pip:
 #RUN py -3 -m pip install --upgrade pip
 #RUN py -3 -m pip install -r requirements.txt
 #CMD ["py", "-3", "runserver.py"]
 
-#for linux containers
+#for linux containers & heroku
 # Using pip:
 RUN pip install --upgrade pip
 RUN python3 -m pip install -r requirements.txt
