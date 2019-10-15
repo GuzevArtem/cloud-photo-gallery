@@ -16,12 +16,12 @@ ADD . /app
 RUN pip install --upgrade pip
 
 #for windows containers
-RUN py -3 -m pip install -r requirements.txt
-CMD ["py", "-3", "runserver.py"]
+#RUN py -3 -m pip install -r requirements.txt
+#CMD ["py", "-3", "runserver.py"]
 
 #for linux containers
-#RUN python3 -m pip install -r requirements.txt
-#CMD ["python3", "runserver.py"]
+RUN python3 -m pip install -r requirements.txt
+CMD ["python3", "runserver.py"]
 
 # Using pipenv:
 #RUN python3 -m pip install pipenv
