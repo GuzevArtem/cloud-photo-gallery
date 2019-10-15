@@ -13,15 +13,15 @@ ADD . /app
 
 #for windows containers & heroku(?)
 # Using pip:
-RUN py -3 -m pip install --upgrade pip
-RUN py -3 -m pip install -r requirements.txt
-CMD ["py", "-3", "runserver.py"]
+#RUN py -3 -m pip install --upgrade pip
+#RUN py -3 -m pip install -r requirements.txt
+#CMD ["py", "-3", "runserver.py"]
 
 #for linux containers
 # Using pip:
-#RUN pip install --upgrade pip
-#RUN python3 -m pip install -r requirements.txt
-#CMD ["python3", "runserver.py"]
+RUN pip install --upgrade pip
+RUN python3 -m pip install -r requirements.txt
+CMD ["python3", "runserver.py"]
 
 # Using pipenv:
 #RUN python3 -m pip install pipenv
