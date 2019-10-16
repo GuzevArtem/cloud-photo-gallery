@@ -27,7 +27,7 @@
                 <img src="{{ url_for('photoShow', username = current_user.name, photoname = image.filename) }}" height="{{ image.height }}" alt="{{ image.filename }}" />
             </a>
             <div>
-                <p class="file_number">{{loop.index + 1}}.</p><p class="file_desc"> {{ image.filename }}</p>
+                <p class="file_number">{{ loop.index }}.</p><p class="file_desc"> {{ image.filename }}</p>
             </div>
         </li>
     {% endfor %}

@@ -1,0 +1,4 @@
+heroku auth:token
+docker login --username=_ --password=${YOUR_TOKEN} registry.heroku.com
+docker build -t registry.heroku.com/${YOUR_APP_NAME}/web .
+docker push registry.heroku.com/${YOUR_APP_NAME}/web

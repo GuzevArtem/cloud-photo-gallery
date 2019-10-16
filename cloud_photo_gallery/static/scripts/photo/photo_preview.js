@@ -2,7 +2,7 @@
 
     var input = document.querySelector(".photo_select"),
         preview = document.querySelector(".photo_preview"),
-        submitButton = document.querySelector(".photo_selector button.submit")
+        resetButton = document.querySelector(".photo_selector button.reset")
         ;
 
 
@@ -77,6 +77,8 @@
         }
     }
 
+    resetButton.onclick = updateImageDisplay;
     input.onchange = updateImageDisplay;
+    updateImageDisplay();   //display default value
 
 }());
