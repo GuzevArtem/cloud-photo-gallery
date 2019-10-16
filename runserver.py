@@ -9,7 +9,7 @@ import sys
 if __name__ == '__main__':
     HOST = '0.0.0.0' #environ.get('HOST', '0.0.0.0')
     try:
-        PORT = int(environ.get('PORT', '5000'))
+        PORT = int(environ.get('PORT', (environ.get('SERVER_PORT', '5000'))))
         print('Attempt to run on', HOST,':', PORT)
     except ValueError:
         PORT = 5000

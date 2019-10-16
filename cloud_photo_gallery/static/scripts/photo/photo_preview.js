@@ -40,8 +40,8 @@
 
         var curFiles = input.files;
         if (curFiles.length === 0) {
-            var para = document.createElement('p');
-            para.textContent = 'No files currently selected for upload';
+            var para = document.createElement('h1');
+            para.innerText = 'No files currently selected for upload';
             preview.appendChild(para);
         } else {
             var list = document.createElement('ol');
@@ -77,8 +77,17 @@
         }
     }
 
-    resetButton.onclick = updateImageDisplay;
+    function displayDefultMesage() {
+        while (preview.firstChild) {
+            preview.removeChild(preview.firstChild);
+        }
+        var para = document.createElement('h1');
+            para.innerText = 'No files currently selected for upload';
+            preview.appendChild(para);
+    }
+
+    resetButton.onclick = displayDefultMesage;
     input.onchange = updateImageDisplay;
-    updateImageDisplay();   //display default value
+    displayDefultMesage();   //display default value
 
 }());
