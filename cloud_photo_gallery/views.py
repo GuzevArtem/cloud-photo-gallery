@@ -48,7 +48,7 @@ def share_upload():
         photos.append(Photo(file.filename , url, path, file.content_type))
     print('Saving photos for', current_user.name, ':', photos) #debug print
     photo_holder.add_photos_for(current_user.name, photos)
-    return redirect(url_for('share'));
+    return redirect(url_for('share'))
 
 
 

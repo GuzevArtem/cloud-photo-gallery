@@ -110,3 +110,4 @@ venv.bak/
 users/
 user_images/
 obj/
+.vscode/

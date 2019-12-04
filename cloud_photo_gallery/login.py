@@ -13,6 +13,7 @@ class ID:
     value = 0
     map = {}
 
+    @staticmethod
     def next(username):
         ID.value += 1
         val = ID.value
@@ -51,6 +52,7 @@ class User(UserMixin):
     def __repr__(self):
         return '%d/%s/%s' % (self.id, self.name, self.password)
     
+    @staticmethod
     def save(user):
         User.users[user.name] = user
         if not exists(app.config['USERS_DEST']):
@@ -58,6 +60,7 @@ class User(UserMixin):
         with open(join(app.config['USERS_DEST'], app.config['USERS_FILE']), 'wb') as f:
             pickle.dump( User.users, f, pickle.HIGHEST_PROTOCOL)
 
+    @staticmethod
     def load():
         with open(join(app.config['USERS_DEST'], app.config['USERS_FILE']), 'rb') as f:
             User.users = pickle.load(f)
@@ -65,7 +68,7 @@ class User(UserMixin):
                 user = User.users[username]
                 ID.map[user.id] = username
                 ID.value = max(ID.value, user.id)
-        return User.users;
+        return User.users
 
 
 

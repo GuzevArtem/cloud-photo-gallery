@@ -34,6 +34,9 @@
     <Compile Include="cloud_photo_gallery\photo_holder.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="cloud_photo_gallery\remoteDB.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="runserver.py" />
     <Compile Include="cloud_photo_gallery\__init__.py" />
     <Compile Include="cloud_photo_gallery\views.py" />

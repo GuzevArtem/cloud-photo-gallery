@@ -1,3 +1,5 @@
+from cloud_photo_gallery.remoteDB import query
+
 class Photo(object):
     """description of class"""
 
@@ -11,20 +13,21 @@ class Photo(object):
 class photo_holder(object):
     """description of class"""
 
+    db = None
+
     photo_storage = {}
-
-
-    def __init__():
-       photo_holder.create_photo_dict_for('default')
-       
+      
+    @staticmethod
     def create_photo_dict_for(username):
         photo_holder.photo_storage[username] = {}
 
+    @staticmethod
     def add_photos_for(username, photos):
         if photo_holder.photo_storage.get(username) == None:
             photo_holder.create_photo_dict_for(username)
         for photo in photos:
             photo_holder.photo_storage[username][photo.name] = photo
 
+    @staticmethod
     def get_photos_for(username):
         return photo_holder.photo_storage.get(username)
