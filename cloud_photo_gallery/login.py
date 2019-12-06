@@ -3,6 +3,8 @@ from datetime import datetime
 from flask import Flask, flash, redirect, render_template, request, session, abort, url_for
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 from cloud_photo_gallery import app
+from cloud_photo_gallery.remoteDB import query
+from psycopg2 import sql
 from urllib import parse
 from os import makedirs
 from os.path import exists, join
@@ -23,7 +25,7 @@ class ID:
 
 # silly user model
 class User(UserMixin):
-
+    db = None
     users = {}
     password = ''
 
@@ -54,6 +56,14 @@ class User(UserMixin):
     
     @staticmethod
     def save(user):
+        if User.db:
+            id = query(
+                sql.SQL("""INSERT INTO users_photo_gallery (id, username, password)
+                        VALUES (DEFAULT,%s,%s) RETURNING id;"""),
+                        (user.name, user.password)
+                    )
+            user.id = id[0][0]
+            ID.map[user.id] = user.name
         User.users[user.name] = user
         if not exists(app.config['USERS_DEST']):
             makedirs(app.config['USERS_DEST'])
@@ -62,12 +72,24 @@ class User(UserMixin):
 
     @staticmethod
     def load():
-        with open(join(app.config['USERS_DEST'], app.config['USERS_FILE']), 'rb') as f:
-            User.users = pickle.load(f)
+        if User.db: rs = query(
+                sql.SQL("""SELECT * FROM users_photo_gallery ;""")
+                )
+        if User.db and rs and len(rs) != 0:
+            User.users = {}
+            for rowUser in rs:
+                user = User(rowUser[1], rowUser[2])
+                user.id = rowUser[0]
+                User.users[user.name] = user
             for username in User.users:
-                user = User.users[username]
-                ID.map[user.id] = username
-                ID.value = max(ID.value, user.id)
+                User.save(User.users[username])
+        else:
+            with open(join(app.config['USERS_DEST'], app.config['USERS_FILE']), 'rb') as f:
+                User.users = pickle.load(f)
+                for username in User.users:
+                    user = User.users[username]
+                    ID.map[user.id] = username
+                    ID.value = max(ID.value, user.id)
         return User.users
 
 
@@ -133,7 +155,7 @@ def login():
                 logged = current_user.is_authenticated,
                 next_redirect = get_next_redirect_string(request)
             )
-
+        User.load()
         if(User.users.get(username) == None):
             return render_template(
                 'login.html',
@@ -180,6 +202,7 @@ def signup():
     if request.form.get("remember") is not None:
         remember = request.form.get("remember") == 'on'
     if password != '' and password != None:
+        User.load()
         if(User.users.get(username) != None):
                 return render_template(
                     'login.html',

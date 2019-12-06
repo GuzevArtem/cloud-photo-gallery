@@ -6,19 +6,20 @@ from flask import Flask, url_for
 from os import listdir, getcwd, environ
 from os.path import isfile, join, exists, splitext
 from urllib import parse
-from mimetypes import guess_extension
+import mimetypes
 
 app = Flask(__name__)
 app.config['img_folder'] = 'user_images'
 app.config['UPLOADED_PHOTOS_DEST'] = join(getcwd(), app.config['img_folder'])
 app.config['USERS_DEST'] = join(getcwd(), 'users')
 app.config['USERS_FILE'] = 'users.pkl'
+mimetypes.init()
 
 try:
     app.config['DB_URL'] = environ['DATABASE_URL']
 except KeyError:
     app.config['DB_URL'] = 'postgres://vqvofoneycrmwf:1127f1ccdd7dd8c816cd7507420232f504732c32681824b02741dd8a852239c8@ec2-54-228-243-238.eu-west-1.compute.amazonaws.com:5432/dcsg44n9sbjolc'
-
+app.config['PHOTO_SCHEMA'] = 'photos'
 
 import cloud_photo_gallery.login as l
 import cloud_photo_gallery.views as v
@@ -35,9 +36,11 @@ except Exception as e:
 print("DB", ("SUCCESSFULLY CONNECTED" if db_connected else "CONNECTION FAILED"))
 
 try:
-    users = l.User.load()
     if db_connected:
         ph.photo_holder.db = db
+        l.User.db = db
+
+    users = l.User.load()
 
     for username in users:
         user = users[username]
@@ -49,7 +52,7 @@ try:
                 with open(join(path,filename), 'rb') as file:
                     with app.app_context(), app.test_request_context():
                         url = url_for('photoShow', username = username, photoname = filename)
-                        photos.append(ph.Photo(filename , url, path, guess_extension(splitext(filename)[1])))
+                        photos.append(ph.Photo(name = filename , url = url, filepath = path, content_type = mimetypes.types_map[splitext(filename)[1]]))
             print('Saving photos for', username, ':', photos) #debug print
             ph.photo_holder.add_photos_for(username, photos)
 except FileNotFoundError:

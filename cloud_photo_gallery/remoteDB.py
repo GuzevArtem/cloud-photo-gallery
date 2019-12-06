@@ -1,5 +1,5 @@
 from cloud_photo_gallery import app
-from psycopg2 import connect
+from psycopg2 import sql, connect
 from psycopg2.extras import DictCursor
 
 class remoteDB(object):
@@ -25,20 +25,31 @@ class remoteDB(object):
 
     @staticmethod
     def initialize():
-        query("CREATE SCHEMA IF NOT EXISTS photos")
+        query(
+            sql.SQL("CREATE SCHEMA IF NOT EXISTS {};")
+                .format(sql.Identifier(app.config['PHOTO_SCHEMA']))
+            )
+        query(
+            sql.SQL("""CREATE TABLE IF NOT EXISTS users_photo_gallery (
+                    id serial primary key,
+                    username text not null,
+                    password text not null
+                    );""")
+            )
 
-@staticmethod
+
 def query(query, vars=None) :
     db = remoteDB()
     with db.connection as conn:
         try:
             with conn.cursor(cursor_factory=DictCursor) as cursor:
+                print("\n",query.as_string(cursor) if hasattr(query, "as_string") else query, "\n")  #debug print
                 cursor.execute(query, vars)
-                cursor.commit()
+                print(cursor.statusmessage)  #debug print
+                result = cursor.fetchall() if cursor.rowcount > 0 else None
             conn.commit()
-            return cursor.fetchall()
-        except:
+            return result
+        except Exception as e:
+            print(e)
             conn.rollback()
-        finally:
-            db.close()
 

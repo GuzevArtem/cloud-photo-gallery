@@ -45,7 +45,7 @@ def share_upload():
             os.makedirs(path)
         url = parse.urljoin(request.host_url, url_for('photoShow', username = current_user.name, photoname = file.filename))
         file.save(os.path.join(path, file.filename))
-        photos.append(Photo(file.filename , url, path, file.content_type))
+        photos.append(Photo(name = file.filename , url = url, filepath = path, content_type = file.content_type))
     print('Saving photos for', current_user.name, ':', photos) #debug print
     photo_holder.add_photos_for(current_user.name, photos)
     return redirect(url_for('share'))
@@ -70,13 +70,7 @@ def share():
 def photoRemove(photoname):
     try:
         username = current_user.name
-        photos = photo_holder.get_photos_for(username)
-        if photos is not None:
-            photo = photos.get(photoname)
-            if photo is not None:
-                photos.pop(photoname)
-                os.remove(os.path.join(photo.filepath, photo.name))
-                print('File removed for', username, ':', photo.name) #debug print
+        photo_holder.remove(username, photoname)
         return redirect(url_for('photos'))
     except FileNotFoundError:
         abort(404) 
