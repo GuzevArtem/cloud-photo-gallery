@@ -22,9 +22,9 @@
     <ol>
     {% for image in images %}
         <li class="preview_image">
-            <a class="remove_button" href="{{ url_for('photoRemove', photoname = image.filename) }}"><button name="">X</button></a>
-            <a class="image" href="{{ url_for('photoDownload',username = current_user.name, photoname = image.filename) }}">
-                <img src="{{ url_for('photoShow', username = current_user.name, photoname = image.filename) }}" height="{{ image.height }}" alt="{{ image.filename }}" />
+            <a class="remove_button" href="{{ url_for('photoRemove', id = image.id) }}"><button name="">X</button></a>
+            <a class="image" href="{{ url_for('photoDownload',username = current_user.name, id = image.id) }}">
+                <img src="{{ url_for('photoShow', username = current_user.name, id = image.id) }}" height="{{ image.height }}" alt="{{ image.filename }}" />
             </a>
             <div>
                 <p class="file_number">{{ loop.index }}.</p><p class="file_desc"> {{ image.filename }}</p>

@@ -9,8 +9,8 @@ from urllib import parse
 import mimetypes
 
 app = Flask(__name__)
-app.config['img_folder'] = 'user_images'
-app.config['UPLOADED_PHOTOS_DEST'] = join(getcwd(), app.config['img_folder'])
+app.config['IMAGES_FOLDER'] = 'user_images'
+app.config['UPLOADED_PHOTOS_DEST'] = join(getcwd(), app.config['IMAGES_FOLDER'])
 app.config['USERS_DEST'] = join(getcwd(), 'users')
 app.config['USERS_FILE'] = 'users.pkl'
 mimetypes.init()
@@ -20,6 +20,7 @@ try:
 except KeyError:
     app.config['DB_URL'] = 'postgres://vqvofoneycrmwf:1127f1ccdd7dd8c816cd7507420232f504732c32681824b02741dd8a852239c8@ec2-54-228-243-238.eu-west-1.compute.amazonaws.com:5432/dcsg44n9sbjolc'
 app.config['PHOTO_SCHEMA'] = 'photos'
+app.config['USERS_TABLE'] = 'users_photo_gallery'
 
 import cloud_photo_gallery.login as l
 import cloud_photo_gallery.views as v
@@ -51,8 +52,13 @@ try:
             for filename in onlyfiles:
                 with open(join(path,filename), 'rb') as file:
                     with app.app_context(), app.test_request_context():
-                        url = url_for('photoShow', username = username, photoname = filename)
-                        photos.append(ph.Photo(name = filename , url = url, filepath = path, content_type = mimetypes.types_map[splitext(filename)[1]]))
+                        splitted = filename.split('.')
+                        ext = splitext(filename)[1]
+                        id = splitted[0]
+                        name = splitted[1:]
+                        url = url_for('photoShow', username = username, id = id)
+                        print('Loading from local photo:', str(id)+ '.' + name[1] + ext, 'with url:',url) #debug print
+                        photos.append(ph.Photo(id = int(id), name = filename , url = url, filepath = path, content_type = mimetypes.types_map[ext]))
             print('Saving photos for', username, ':', photos) #debug print
             ph.photo_holder.add_photos_for(username, photos)
 except FileNotFoundError:

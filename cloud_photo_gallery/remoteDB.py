@@ -30,11 +30,12 @@ class remoteDB(object):
                 .format(sql.Identifier(app.config['PHOTO_SCHEMA']))
             )
         query(
-            sql.SQL("""CREATE TABLE IF NOT EXISTS users_photo_gallery (
+            sql.SQL("""CREATE TABLE IF NOT EXISTS {}.{} (
                     id serial primary key,
-                    username text not null,
+                    username text not null UNIQUE,
                     password text not null
                     );""")
+                .format(sql.Identifier(app.config['PHOTO_SCHEMA']), sql.Identifier(app.config['USERS_TABLE']))
             )
 
 
