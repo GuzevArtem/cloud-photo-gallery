@@ -111,3 +111,5 @@ users/
 user_images/
 obj/
 .vscode/
+*.pyproj
+*.pyproj.user

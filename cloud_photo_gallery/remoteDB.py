@@ -13,7 +13,7 @@ class remoteDB(object):
         return connect(app.config['DB_URL'], sslmode='require')
 
     def close(self):
-        if not self.connection.closed : #returns 0 is open
+        if self.connection and not self.connection.closed : #returns 0 is open
             self.connection.close()
 
     def __del__(self):
