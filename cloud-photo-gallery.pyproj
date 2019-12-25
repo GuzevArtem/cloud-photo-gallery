@@ -56,6 +56,8 @@
     <Content Include=".dockerignore" />
     <Content Include="cloud_photo_gallery\static\scripts\auth\auth.js" />
     <Content Include="cloud_photo_gallery\static\scripts\photo\photo_preview.js" />
+    <Content Include="cloud_photo_gallery\static\scripts\photo\photo_reload.js" />
+    <Content Include="cloud_photo_gallery\static\scripts\sha512.min.js" />
     <Content Include="cloud_photo_gallery\static\styles\login.css" />
     <Content Include="cloud_photo_gallery\static\styles\photo_preview.css" />
     <Content Include="cloud_photo_gallery\templates\list_photo.html" />

@@ -1,6 +1,6 @@
 
 from datetime import datetime, timedelta
-from flask import Flask, flash, redirect, render_template, request, session, abort, url_for
+from flask import Flask, flash, redirect, render_template, request, session, abort, url_for, jsonify, Response
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 from cloud_photo_gallery import app
 from cloud_photo_gallery.remoteDB import query
@@ -161,8 +161,18 @@ def redirect_next(request):
         next_redirect = next_redirect.lstrip('/')
     else:
         next_redirect = 'home'
-    print('redirect to', next_redirect)
-    return redirect(next_redirect)      #url_for(next_redirect) #?
+    print('redirect to', next_redirect) #debug print
+    return redirect(next_redirect)
+
+def redirect_string_next(request):
+    next_redirect = request.args.get('next')
+    if next_redirect != None and next_redirect != '/':
+        next_redirect = next_redirect.lstrip('/')
+    else:
+        next_redirect = 'home'
+    next_redirect = request.host_url + next_redirect
+    print('redirect to', next_redirect) #debug print
+    return next_redirect
 
 def get_next_redirect_string(request):
     next_redirect = request.args.get('next')
@@ -175,51 +185,30 @@ def get_next_redirect_string(request):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+        req = request.get_json() 
+        print(req) #debug print
+        username = req.get('username')
+        password = req.get('password')
         remember = False
-        if request.form.get("remember") is not None:
-            remember = (request.form.get("remember") == 'on')
+        if req.get("remember") is not None:
+            remember = (req.get("remember") == 'on')
         print('login attempt for', username, "remember", remember) #debug print
         if password == '' or password == None:
-            return render_template(
-                'login.html',
-                title='Sign in',
-                year=datetime.now().year,
-                message='Sign in',
-                login_error='password must not be empty',
-                logged = current_user.is_authenticated,
-                next_redirect = get_next_redirect_string(request)
-            )
+            return 
+            return jsonify({'error_msg':'password must not be empty'}) , 400
         User.load()
         if(User.users.get(username) == None):
-            return render_template(
-                'login.html',
-                title='Sign in',
-                year=datetime.now().year,
-                message='Sign in',
-                login_error='User name or password are incorrect',
-                logged = current_user.is_authenticated,
-                next_redirect = get_next_redirect_string(request)
-            )
+            return jsonify({'error_msg':'User name or password are incorrect'}) , 400
 
         user = User.users[username]
         if(password != user.password):
-            return render_template(
-                'login.html',
-                title='Sign in',
-                year=datetime.now().year,
-                message='Sign in',
-                login_error='User name or password are incorrect',
-                logged = current_user.is_authenticated,
-                next_redirect = get_next_redirect_string(request)
-            )
+            return jsonify({'error_msg':'User name or password are incorrect'}) , 400
         user.remember_me = remember
         user.active = True
         if login_user(user, remember = remember):
             #current_user = user
             print('Successful login for user: {id=', user.id, ', name=', user.name,'}') #debug print
-        return redirect_next(request)
+        return jsonify({'href':redirect_string_next(request)}), 200
     else:
         return render_template(
             'login.html',
@@ -242,15 +231,8 @@ def signup():
     if password != '' and password != None:
         User.load()
         if(User.users.get(username) != None):
-                return render_template(
-                    'login.html',
-                    title='Sign in',
-                    year=datetime.now().year,
-                    message='Registering',
-                    signup_error='User already exists',
-                    logged = current_user.is_authenticated,
-                    next_redirect = get_next_redirect_string(request)
-                )
+            return jsonify({'error_msg':'User already exists'}) , 400
+
         user = User(id = -1, name = username, password = password, remember_me = remember)
         User.save(user)
         print('New user: {id=', user.id, ', name=', user.name, '}') #debug print
