@@ -128,6 +128,7 @@ class photo_holder(object):
         try:
             id = int(file.filename.split('.',2)[0])
         except:
+            rs = None
             if photo_holder.db:
                 rs = query(
                     sql.SQL("""SELECT nextval(pg_get_serial_sequence({},'id'));""")
@@ -179,6 +180,22 @@ class photo_holder(object):
                     print("Loaded photo", photo.name,"id",photo.id,"for",username,"photo:",photo) #debug print
                     result[photo.id] = photo
         photo_holder._add_photos_for(username, list(result.values()))
+        return result
+
+    @staticmethod
+    def get_photos_ids_for(username):
+        result = []
+        cached = photo_holder.photo_storage.get(username)
+        if photo_holder.db:
+            dbRows = query(
+                            sql.SQL("""SELECT id FROM  {}.{};""")
+                                .format(sql.Identifier(app.config['PHOTO_SCHEMA']), sql.Identifier(username))
+                        )
+            if dbRows:
+                for row in dbRows:
+                    result.append(row[0])
+        elif cached is not None and len(cached) != 0 and all(os.path.exists(cached[id].get_full_path()) for id in cached):
+            result.append(list(cached.keys()))
         return result
 
     @staticmethod

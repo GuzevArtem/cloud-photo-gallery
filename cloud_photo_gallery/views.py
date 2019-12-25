@@ -5,12 +5,11 @@ Routes and views for the flask application.
 from os import path
 from datetime import datetime
 from urllib import parse
-from flask import Flask, flash, redirect, render_template, request, session, abort, url_for, send_file, send_from_directory
+from flask import Flask, flash, redirect, render_template, request, session, abort, url_for, send_file, send_from_directory, jsonify
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 from cloud_photo_gallery import app
 from cloud_photo_gallery.photo_holder import photo_holder, Photo
-
-
+from hashlib import sha512
 
 @app.route('/')
 @app.route('/home')
@@ -54,7 +53,7 @@ def photoRemove(id):
     try:
         username = current_user.name
         photo_holder.remove(username, int(id))
-        return redirect(url_for('photos'))
+        return '', 200
     except FileNotFoundError:
         abort(404) 
 
@@ -72,7 +71,7 @@ def photoDownload(username, id):
     except FileNotFoundError:
         abort(404) 
 
-@app.route('/photo/<username>/<id>/show') #not used. Use uploadSet instead
+@app.route('/photo/<username>/<id>/show')
 @login_required
 def photoShow(username, id):
     """Returns the photo."""
@@ -85,15 +84,57 @@ def photoShow(username, id):
         abort(404) 
 
 
+@app.route('/photos/reload/', methods = ['POST'])
+@login_required
+def check_reload():
+    if request.is_json:
+        req = request.get_json()
+        count = req.get('count')
+        hash = req.get('hash')
+
+        ids = photo_holder.get_photos_ids_for(current_user.name)
+        if count != len(ids):
+            return get_reload_photos()
+        ids.sort()
+        string = str(ids)
+        string = string.replace(" ", "").replace("[","").replace("]","")
+        #print('ids in db:',string) #debug print
+        calculatedHash = sha512(bytearray(string,'ascii'))
+        print(count, hash, calculatedHash.hexdigest()) #debug print
+        return get_reload_photos() if hash != str(calculatedHash.hexdigest()) else jsonify([])
+    abort(404)
+
+@app.route('/photos/reload', methods = ['GET'])
+@login_required
+def get_reload_photos():
+    photos = photo_holder.get_photos_for(current_user.name)
+    print('Draw photos for', current_user.name ,':', photos ) #debug print
+    images = []
+    if photos is not None:
+        if len(photos) != 0:
+            for id in photos:
+                file = photos[id]
+                images.append({
+                    'id': file.id,
+                    'filename': file.name,
+                    'height': 250,
+                    'url': file.url,
+                    'removeUrl': url_for('photoRemove', id = id),
+                    'downloadUrl': url_for('photoDownload', username = current_user.name, id = id)
+                })
+            print('Viewing', images) #debug print images = []
+    return jsonify(images), 200
+
+
 @app.route('/photos')
 @login_required
 def photos():
     """Renders the photos page."""
     photos = photo_holder.get_photos_for(current_user.name)
     print('Draw photos for', current_user.name ,':', photos ) #debug print
+    images = []
     if photos is not None:
         if len(photos) != 0:
-            images = []
             for id in photos:
                 file = photos[id]
                 images.append({
@@ -103,21 +144,14 @@ def photos():
                     'url': file.url
                 })
             print('Viewing', images) #debug print
-            return render_template(
-                'list_photo.html',
-                title='Photo',
-                year=datetime.now().year,
-                message='List your photos.',
-                logged = current_user.is_authenticated,
-                **{'images': images}
-            )
     return render_template(
         'list_photo.html',
         title='Photo',
         year=datetime.now().year,
         message='List your photos.',
-        logged = current_user.is_authenticated
-        )
+        logged = current_user.is_authenticated,
+        **{'images': images}
+    )
 
 @app.route('/contact')
 def contact():

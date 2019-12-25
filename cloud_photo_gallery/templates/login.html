@@ -11,7 +11,7 @@
         <div class="row justified">
             <div class="login-box">
                 <h2 class="centered_text">Sign in</h2>
-                <form method="post" class="login" action="{{ url_for('login') }}{{ next_redirect }}">
+                <form id="login" method="post" class="login" action="{{ url_for('login') }}{{ next_redirect }}">
                     <div class="error">
                         {{ login_error }}
                     </div>
@@ -24,13 +24,13 @@
                         <input class="password right" type="password" name="password" required>
                     </div>
                     <button type="submit" class="center">Sign in</button>
-                    <input type="checkbox" name="remember">Remember me
+                    <input type="checkbox" class="remember" name="remember">Remember me
                 </form>
             </div>
 
             <div class="login-box">
                 <h2 class="centered_text">Or sign up</h2>
-                <form method="post" class="signup" action="{{ url_for('signup') }}{{ next_redirect }}">
+                <form id="signup" method="post" class="signup" action="{{ url_for('signup') }}{{ next_redirect }}">
                     <div class="error">
                         {{ signup_error }}
                     </div>
@@ -53,5 +53,10 @@
 
 
         {% block scripts %}
-        <!--<script src="/static/scripts/auth/login.js"></script>-->
+        <script src="/static/scripts/sha512.min.js"></script>
+        <script src="/static/scripts/auth/auth.js"></script>
+        <script>
+            let upLogin = new UPSender("#login");
+            let upSignup = new UPSender("#signup");
+        </script>
         {% endblock %}

@@ -15,16 +15,17 @@
     </div>
 </div>
 
-<div class="photo_preview row">
+<div id="photo_preview" class="photo_preview row">
+    <button class="reload_button">Reload</button>
     {% if images is not defined %}
     <h2>You haven't any photo yet :(</h2>
     {% endif %}
     <ol>
     {% for image in images %}
-        <li class="preview_image">
+        <li class="preview_image" id="{{ image.id }}">
             <a class="remove_button" href="{{ url_for('photoRemove', id = image.id) }}"><button name="">X</button></a>
             <a class="image" href="{{ url_for('photoDownload',username = current_user.name, id = image.id) }}">
-                <img src="{{ url_for('photoShow', username = current_user.name, id = image.id) }}" height="{{ image.height }}" alt="{{ image.filename }}" />
+                <img src="{{ image.url }}" height="{{ image.height }}" alt="{{ image.filename }}" />
             </a>
             <div>
                 <p class="file_number">{{ loop.index }}.</p><p class="file_desc"> {{ image.filename }}</p>
@@ -39,5 +40,9 @@
 
 
 {% block scripts %}
-    <!--<script src="/static/scripts/photo/photo_preview.js"></script>-->
+    <script src="/static/scripts/sha512.min.js"></script>
+    <script src="/static/scripts/photo/photo_reload.js"></script>
+    <script>
+        let photoReloader = new PhotoReloader("#photo_preview", 10000);
+    </script>
 {% endblock %}
