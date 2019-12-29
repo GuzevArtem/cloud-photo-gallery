@@ -34,7 +34,12 @@ class UPSender {
                 }
             }
         }).fail((xhr, status, error) => {
-            this.error_msg.text(xhr.responseJSON.error_msg);
+            console.error(status);
+            let error_message = null;
+            if (xhr.responseJSON != null) {
+                error_message = xhr.responseJSON['error_msg'];
+            }
+            this.error_msg.text(error_message == null ? '500 Try again later' : error_message);
         });
     }
 

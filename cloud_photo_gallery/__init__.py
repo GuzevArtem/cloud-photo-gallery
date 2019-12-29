@@ -52,12 +52,12 @@ try:
             for filename in onlyfiles:
                 with open(join(path,filename), 'rb') as file:
                     with app.app_context(), app.test_request_context():
-                        splitted = filename.split('.')
-                        ext = splitext(filename)[1]
+                        splitted, ext = splitext(filename)
+                        splitted = splitted.split('.')
                         id = splitted[0]
-                        name = splitted[1:]
+                        name = '.'.join(splitted[1:])
                         url = url_for('photoShow', username = username, id = id)
-                        print('Loading from local photo:', str(id)+ '.' + name[1] + ext, 'with url:',url) #debug print
+                        print('Loading from local photo:', str(id)+ '.' + name + ext, 'with url:',url) #debug print
                         photos.append(ph.Photo(id = int(id), name = filename , url = url, filepath = path, content_type = mimetypes.types_map[ext]))
             print('Saving photos for', username, ':', photos) #debug print
             ph.photo_holder.add_photos_for(username, photos)

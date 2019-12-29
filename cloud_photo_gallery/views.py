@@ -175,7 +175,7 @@ def photos():
                     'id': photo.id,
                     'filename': photo.getName(),
                     'height': 250,
-                    'url': file.url
+                    'url': photo.url
                 })
             print('Viewing', images) #debug print
     return render_template(

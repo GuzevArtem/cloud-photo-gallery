@@ -195,6 +195,9 @@ def loginPage():
 
 @app.route('/login', methods=['POST'])
 def login():
+    if not request.is_json:
+        abort(400)
+
     req = request.get_json() 
     print(req) #debug print
     username = req.get('username')
@@ -225,11 +228,16 @@ def login():
 
 @app.route('/signup', methods=['POST'])
 def signup():
-    username = request.form['username']
-    password = request.form['password']
+    if not request.is_json:
+        abort(400)
+
+    req = request.get_json() 
+    print(req) #debug print
+    username = req.get('username')
+    password = req.get('password')
     remember = False
-    if request.form.get("remember") is not None:
-        remember = request.form.get("remember") == 'on'
+    if req.get("remember") is not None:
+        remember = (req.get("remember") == 'on')
     if password != '' and password != None:
         User.load()
         if(User.users.get(username) != None):
@@ -241,18 +249,9 @@ def signup():
         if login_user(user, remember = remember):
             #current_user = user
             print('Successful login for user: {id=', user.id, ', name=', user.name,'}') #debug print
-        return redirect_next(request)
+        return jsonify({'href':redirect_string_next(request)}), 204
     else:
-        return render_template(
-            'login.html',
-            title='Sign in',
-            year=datetime.now().year,
-            message='Registering',
-            signup_error='password must not be empty',
-            logged = current_user.is_authenticated,
-            next_redirect = get_next_redirect_string(request)
-        )
-
+        return jsonify({'error_msg':'Password must not be empty'}) , 400
 
 
 
