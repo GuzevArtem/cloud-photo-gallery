@@ -76,10 +76,10 @@ class PhotoReloader {
     remove(event) {
         event.preventDefault();
         var target = $(event.currentTarget);
-        var url = target.attr('href');
+        var url = target.attr('value');
         var id = target.parent().attr('id');
         $.ajax({
-            type: 'get',
+            type: 'delete',
             url: url,
             async: true,
             success: () => {
@@ -93,6 +93,36 @@ class PhotoReloader {
 
     clear() {
         this.elem.children().not('.reload_button').remove();
+    }
+
+    rename(id, name) {
+        var list_elem = this.elem.find('#' + id);
+        if (list_elem == null || list_elem.length != 1) {
+            console.warn('Unable to find item to update');
+            return;
+        }
+        list_elem.find('.file_desc').text(name);
+    }
+
+    renameRemote(event) {
+        event.preventDefault();
+        var target = $(event.currentTarget);
+        var name = target.attr('value');
+        var id = target.parent().attr('id');
+        $.ajax({
+            type: 'put',
+            url: 'photo/'+id,
+            async: true,
+            dataType: "json",
+            contentType: 'application/json',
+            data: JSON.stringify({
+                "name": name
+            }),
+            success: () => {
+                console.log('Updating view...')
+                this.rename(id, name);
+            }
+        });
     }
 
     append(photos) {
@@ -113,16 +143,14 @@ class PhotoReloader {
             const id = photo.id;
             let li = $('<li>').addClass('preview_image');
             li.attr('id', id);
-            //<a class="remove_button" href="{{ url_for('photoRemove', id = image.id) }}"><button name="">X</button></a>
-            let removeLink = $('<a>').addClass('remove_button');
-            removeLink.attr('href', photo.removeUrl);
-            let btn = $('<button>');
-            btn.text('X');
-            btn.attr('name', "");
-            removeLink.append(btn);
+            //<button class="remove_button" name="" value="{{ url_for('photoRemove', id = image.id) }}">X</button>
+            let removeBtn = $('<button>').addClass('remove_button');
+            removeBtn.attr('value', photo.removeUrl);
+            removeBtn.text('X');
+            removeBtn.attr('name', "remove_"+i); 
 
             //<a class="image" href="{{ url_for('photoDownload', username = current_user.name, id = image.id) }}">
-            //   <img src="{{ url_for('photoShow', username = current_user.name, id = image.id) }}" height="{{ image.height }}" alt="{{ image.filename }}" />
+            //   <img src="{{ url_for('photoShowFor', username = current_user.name, id = image.id) }}" height="{{ image.height }}" alt="{{ image.filename }}" />
             //</a>
             let image_download = $('<a>').addClass('image');
             image_download.attr('href', photo.downloadUrl);
@@ -141,7 +169,7 @@ class PhotoReloader {
             titleDescriptionDiv.append(titleDescriptionP1);
             titleDescriptionDiv.append(titleDescriptionP2);
             
-            li.append(removeLink);
+            li.append(removeBtn);
             li.append(image_download);
             li.append(titleDescriptionDiv);
             list.append(li);

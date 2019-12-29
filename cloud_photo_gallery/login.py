@@ -182,35 +182,9 @@ def get_next_redirect_string(request):
 
 
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        req = request.get_json() 
-        print(req) #debug print
-        username = req.get('username')
-        password = req.get('password')
-        remember = False
-        if req.get("remember") is not None:
-            remember = (req.get("remember") == 'on')
-        print('login attempt for', username, "remember", remember) #debug print
-        if password == '' or password == None:
-            return 
-            return jsonify({'error_msg':'password must not be empty'}) , 400
-        User.load()
-        if(User.users.get(username) == None):
-            return jsonify({'error_msg':'User name or password are incorrect'}) , 400
-
-        user = User.users[username]
-        if(password != user.password):
-            return jsonify({'error_msg':'User name or password are incorrect'}) , 400
-        user.remember_me = remember
-        user.active = True
-        if login_user(user, remember = remember):
-            #current_user = user
-            print('Successful login for user: {id=', user.id, ', name=', user.name,'}') #debug print
-        return jsonify({'href':redirect_string_next(request)}), 200
-    else:
-        return render_template(
+@app.route('/login', methods=['GET'])
+def loginPage():
+    return render_template(
             'login.html',
             title='Sign in',
             year=datetime.now().year,
@@ -218,6 +192,34 @@ def login():
             logged = current_user.is_authenticated,
             next_redirect = get_next_redirect_string(request)
         )
+
+@app.route('/login', methods=['POST'])
+def login():
+    req = request.get_json() 
+    print(req) #debug print
+    username = req.get('username')
+    password = req.get('password')
+    remember = False
+    if req.get("remember") is not None:
+        remember = (req.get("remember") == 'on')
+    print('login attempt for', username, "remember", remember) #debug print
+    if password == '' or password == None:
+        return 
+        return jsonify({'error_msg':'password must not be empty'}) , 400
+    User.load()
+    if(User.users.get(username) == None):
+        return jsonify({'error_msg':'User name or password are incorrect'}) , 400
+
+    user = User.users[username]
+    if(password != user.password):
+        return jsonify({'error_msg':'User name or password are incorrect'}) , 400
+    user.remember_me = remember
+    user.active = True
+    if login_user(user, remember = remember):
+        #current_user = user
+        print('Successful login for user: {id=', user.id, ', name=', user.name,'}') #debug print
+    return jsonify({'href':redirect_string_next(request)}), 200
+
 
 
 

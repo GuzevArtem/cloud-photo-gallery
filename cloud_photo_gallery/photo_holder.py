@@ -10,19 +10,25 @@ class Photo(object):
 
     def __init__(self, id = None, name = None, url = None, filepath = None, content_type = None):
         self.id = id if id is not None else ID.next()
-        self.name = name
         self.url = url
         self.filepath = filepath
         self.content_type = content_type
+        self.name, self.extension = os.path.splitext(name)
+
+    def setName(self, name):
+        self.name = name
+
+    def getName(self):
+        return self.name+self.extension
 
     def get_full_path(self):
         return os.path.join(self.filepath, self.get_full_name())
 
     def get_full_name(self):
-        return str(self.id)+'.'+self.name
+        return str(self.id)+'.'+self.getName()
 
     def __str__(self):
-        return 'Photo(id=%d, name=/%s, filepath=%s, url=/%s)' % (self.id, self.name, self.filepath, self.url)
+        return 'Photo(id=%d, name=/%s, filepath=%s, url=/%s)' % (self.id, self.getName(), self.filepath, self.url)
 
     def __repr__(self):
         return str(self)
@@ -112,7 +118,7 @@ class photo_holder(object):
                         RETURNING id;
                         """)
                         .format(sql.Identifier(app.config['PHOTO_SCHEMA']), sql.Identifier(username)),
-                        [photo.name, photo.url, photo.content_type, Binary(file.read())]
+                        [photo.getName(), photo.url, photo.content_type, Binary(file.read())]
                         )
                     photo.id = id[0][0]
                 else:
@@ -149,7 +155,7 @@ class photo_holder(object):
             for file in files:
                 id = photo_holder.gen_next_id(username)
                 print("Next id:",id)  #debug print
-                url = url_for('photoShow', username = username, id = id)
+                url = url_for('photoShowFor', username = username, id = id)
                 photos.append(Photo(id = id, name = file.filename , url = url, filepath = path, content_type = file.content_type))
             for i in range(len(files)):
                 files[i].save(photos[i].get_full_path())
@@ -177,7 +183,7 @@ class photo_holder(object):
                         os.makedirs(photo.filepath)
                     with open(photo.get_full_path(),'wb') as f:
                         f.write(bytes(row[4]))
-                    print("Loaded photo", photo.name,"id",photo.id,"for",username,"photo:",photo) #debug print
+                    print("Loaded photo", photo.getName(),"id",photo.id,"for",username,"photo:",photo) #debug print
                     result[photo.id] = photo
         photo_holder._add_photos_for(username, list(result.values()))
         return result
@@ -207,6 +213,27 @@ class photo_holder(object):
             return photo_holder.get_photos_for(username).get(photo_id)
 
 
+    @staticmethod
+    def rename(username, id, name):
+        photos = photo_holder.photo_storage.get(username)
+        if photos is not None:
+            photo = photos.get(id)
+            if photo is not None:
+                oldPath = photo.get_full_path()
+                photo.setName(name)
+                os.rename(oldPath, photo.get_full_path())
+                print('File renamed for', username, ':', photo.id,':', photo.getName()) #debug print
+        if photo_holder.db:
+            result = query(
+                    sql.SQL("""UPDATE {}.{}
+                    SET filename = {}
+                    WHERE id = %s RETURNING id;""")
+                    .format(sql.Identifier(app.config['PHOTO_SCHEMA']), sql.Identifier(username), sql.Literal(name)),
+                    [id]
+                    )
+            print("Updated",result[0][0],"for",username) #debug print
+
+
 
     @staticmethod
     def remove(username, id):
@@ -215,7 +242,7 @@ class photo_holder(object):
             photo = photos.get(id)
             if photo is not None:
                 os.remove(photo.get_full_path())
-                print('File removed for', username, ':', photo.id,':', photo.name) #debug print
+                print('File removed for', username, ':', photo.id,':', photo.getName()) #debug print
                 photos.pop(id)
         if photo_holder.db:
             result = query(

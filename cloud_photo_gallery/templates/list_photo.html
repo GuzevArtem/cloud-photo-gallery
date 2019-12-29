@@ -23,7 +23,7 @@
     <ol>
     {% for image in images %}
         <li class="preview_image" id="{{ image.id }}">
-            <a class="remove_button" href="{{ url_for('photoRemove', id = image.id) }}"><button name="">X</button></a>
+            <button name="remove_{{ loop.index }}" class="remove_button" value="{{ url_for('photoRemove', id = image.id) }}">X</button>
             <a class="image" href="{{ url_for('photoDownload',username = current_user.name, id = image.id) }}">
                 <img src="{{ image.url }}" height="{{ image.height }}" alt="{{ image.filename }}" />
             </a>

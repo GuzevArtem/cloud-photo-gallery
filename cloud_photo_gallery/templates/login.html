@@ -47,16 +47,17 @@
                 </form>
             </div>
         </div>
+    </div>
 
 
-        {% endblock %}
+    {% endblock %}
 
 
-        {% block scripts %}
-        <script src="/static/scripts/sha512.min.js"></script>
-        <script src="/static/scripts/auth/auth.js"></script>
-        <script>
-            let upLogin = new UPSender("#login");
-            let upSignup = new UPSender("#signup");
-        </script>
-        {% endblock %}
+    {% block scripts %}
+    <script src="/static/scripts/sha512.min.js"></script>
+    <script src="/static/scripts/auth/auth.js"></script>
+    <script>
+        let upLogin = new UPSender("#login");
+        let upSignup = new UPSender("#signup");
+    </script>
+    {% endblock %}
